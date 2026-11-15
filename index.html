@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolatore Post News</title>
+    <meta name="theme-color" content="#217346">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Post News">
+<style>
+    * { box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 10px;
+        background: #f5f5f5;
+    }
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+        color: #217346;
+        margin-top: 0;
+        margin-bottom: 20px;
+        border-bottom: 3px solid #217346;
+        padding-bottom: 10px;
+        font-size: 24px;
+    }
+    .form-group { margin-bottom: 15px; }
+    .form-label {
+        display: block;
+        background: #217346;
+        color: white;
+        font-weight: bold;
+        padding: 10px;
+        border-radius: 4px 4px 0 0;
+        font-size: 14px;
+    }
+    input, select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 0 0 4px 4px;
+        font-size: 16px;
+        background: white;
+    }
+    input:focus, select:focus { outline: none; border-color: #217346; }
+    .news-banner {
+        display: none;
+        background: #e3f2fd;
+        border-left: 4px solid #1976d2;
+        color: #0d47a1;
+        padding: 12px 15px;
+        margin-bottom: 15px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    .result-section {
+        background: #e8f5e9;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+    .result-section h2 {
+        color: #217346;
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 20px;
+    }
+    .result-section h3 {
+        margin: 18px 0 6px 0;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 16px;
+        color: white;
+    }
+    .h-long { background: #2e7d32; }
+    .h-short { background: #c62828; }
+    .h-tot { background: #455a64; }
+    .result-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        border-bottom: 1px solid #c8e6c9;
+        flex-wrap: wrap;
+    }
+    .result-row:last-child { border-bottom: none; }
+    .result-label {
+        font-weight: bold;
+        color: #1b5e20;
+        font-size: 14px;
+        flex: 1;
+        min-width: 150px;
+    }
+    .result-value {
+        font-size: 18px;
+        font-weight: bold;
+        color: #217346;
+        text-align: right;
+    }
+    .lots-result { font-size: 28px; color: #1b5e20; }
+    .highlight-result {
+        background: #fff9c4;
+        border-left: 4px solid #fbc02d;
+    }
+    .error-banner {
+        background: #f8d7da;
+        border-left: 4px solid #dc3545;
+        padding: 15px;
+        margin-top: 20px;
+        color: #721c24;
+        font-size: 14px;
+        border-radius: 4px;
+        font-weight: bold;
+        display: none;
+    }
+    .note {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        margin-top: 20px;
+        color: #856404;
+        font-size: 13px;
+        border-radius: 4px;
+        line-height: 1.5;
+    }
+    .note ul { margin: 8px 0 0 0; padding-left: 18px; }
+    .note li { margin-bottom: 6px; }
+    @media (min-width: 768px) {
+        body { padding: 20px; }
+        .container { padding: 30px; }
+        h1 { font-size: 28px; }
+        .result-label { font-size: 15px; }
+        .result-value { font-size: 20px; }
+        .lots-result { font-size: 32px; }
+    }
+    @media (min-width: 1024px) {
+        body { padding: 40px 20px; }
+        h1 { font-size: 32px; margin-bottom: 30px; }
+        .form-group { margin-bottom: 0; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>📰 CALCOLATORE POST NEWS</h1>
+
+    <div class="form-group">
+        <label class="form-label">NEWS ALTO IMPATTO</label>
+        <select id="news">
+            <option value="">News Alto impatto</option>
+            <option value="ECB">ECB PRESS CONFERENCE EUR/JPY</option>
+            <option value="FOMC">FOMC PRESS CONFERENCE EUR/USD</option>
+        </select>
+    </div>
+    <div class="news-banner" id="newsBanner"></div>
+
+    <div class="form-grid">
+        <div class="form-group">
+            <label class="form-label">COPPIA FOREX</label>
+            <select id="pair">
+                <option value="EURUSD">EURUSD</option>
+                <option value="GBPUSD">GBPUSD</option>
+                <option value="USDJPY">USDJPY</option>
+                <option value="USDCHF">USDCHF</option>
+                <option value="AUDUSD">AUDUSD</option>
+                <option value="USDCAD">USDCAD</option>
+                <option value="NZDUSD">NZDUSD</option>
+                <option value="EURJPY">EURJPY</option>
+                <option value="GBPJPY" selected>GBPJPY</option>
+                <option value="EURGBP">EURGBP</option>
+                <option value="EURAUD">EURAUD</option>
+                <option value="EURCHF">EURCHF</option>
+                <option value="AUDJPY">AUDJPY</option>
+                <option value="GBPAUD">GBPAUD</option>
+                <option value="GBPCHF">GBPCHF</option>
+                <option value="CHFJPY">CHFJPY</option>
+                <option value="CADJPY">CADJPY</option>
+                <option value="NZDJPY">NZDJPY</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">CAPITALE (€)</label>
+            <input type="number" id="capital" value="158000" step="1000">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">LEVA</label>
+            <select id="leverage">
+                <option value="10">1:10</option>
+                <option value="20">1:20</option>
+                <option value="30" selected>1:30</option>
+                <option value="50">1:50</option>
+                <option value="100">1:100</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">RISCHIO (%)</label>
+            <input type="number" id="risk" value="2" step="0.1">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">HIGH</label>
+            <input type="number" id="high" value="" step="0.00001" placeholder="Massimo candela">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">LOW</label>
+            <input type="number" id="low" value="" step="0.00001" placeholder="Minimo candela">
+        </div>
+    </div>
+
+    <div class="error-banner" id="errorBanner"></div>
+
+    <div class="result-section" id="results">
+        <h2>RISULTATI</h2>
+
+        <h3 class="h-long">🟢 LONG – BUY STOP</h3>
+        <div class="result-row highlight-result">
+            <span class="result-label">LOTTI LONG:</span>
+            <span class="result-value lots-result" id="lotsLong">-</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Prezzo Buy Stop (High + 3 pip):</span>
+            <span class="result-value" id="buyStop">-</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Stop Loss (25 pip):</span>
+            <span class="result-value" id="buySL">-</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Take Profit (50 pip):</span>
+            <span class="result-value" id="buyTP">-</span>
+        </div>
+
+        <h3 class="h-short">🔴 SHORT – SELL STOP</h3>
+        <div class="result-row highlight-result">
+            <span class="result-label">LOTTI SHORT:</span>
+            <span class="result-value lots-result" id="lotsShort">-</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Prezzo Sell Stop (Low − 2 pip):</span>
+            <span class="result-value" id="sellStop">-</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Stop Loss (25 pip):</span>
+            <span class="result-value" id="sellSL">-</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Take Profit (50 pip):</span>
+            <span class="result-value" id="sellTP">-</span>
+        </div>
+
+        <h3 class="h-tot">📊 RIEPILOGO</h3>
+        <div class="result-row">
+            <span class="result-label">Importo a Rischio (€):</span>
+            <span class="result-value" id="riskAmount">-</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Perdita max se partono entrambe in SL (€):</span>
+            <span class="result-value" id="maxLoss">-</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Margine richiesto se partono entrambe (€):</span>
+            <span class="result-value" id="margin">-</span>
+        </div>
+    </div>
+
+    <div class="note">
+        <strong>Note:</strong>
+        <ul>
+            <li>Il timeframe da tradare è a <strong>5 minuti</strong>.</li>
+            <li><strong>ECB PRESS CONFERENCE:</strong> l'ordine pendente va chiuso se non è partito entro le <strong>18:15 ora italiana</strong>.</li>
+            <li><strong>FOMC PRESS CONFERENCE:</strong> l'ordine pendente va chiuso se non è partito entro <strong>75 minuti</strong> dall'ora di inizio della conferenza stampa.</li>
+            <li>I lotti sono calcolati ipotizzando che partano entrambe le posizioni e vadano entrambe in stop loss: la perdita massima complessiva non supera il rischio % impostato (lotti arrotondati per difetto a 0,01).</li>
+            <li>I valori dei pip sono approssimativi e basati su tassi di cambio medi.</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    const BUY_OFFSET_PIPS = 3;
+    const SELL_OFFSET_PIPS = 2;
+    const SL_PIPS = 25;
+    const TP_PIPS = 50;
+
+    function getPipValue(pair) {
+        if (pair.endsWith('JPY')) return 6.25;
+        if (pair.startsWith('EUR')) return 10;
+        if (pair.startsWith('GBP')) return 11.5;
+        if (pair.endsWith('USD')) return 9.2;
+        return 10;
+    }
+
+    function marginFor(pair, lots, price, leverage) {
+        if (pair.endsWith('JPY')) return (lots * 100000 * price / 160) / leverage;
+        if (pair.startsWith('EUR')) return (lots * 100000) / leverage;
+        if (pair.startsWith('GBP')) return (lots * 100000 * 1.15) / leverage;
+        return (lots * 100000 * 0.92) / leverage;
+    }
+
+    function setText(id, text) { document.getElementById(id).textContent = text; }
+
+    function clearResults() {
+        ['lotsLong','buyStop','buySL','buyTP','lotsShort','sellStop','sellSL','sellTP',
+         'riskAmount','maxLoss','margin'].forEach(id => setText(id, '-'));
+    }
+
+    function onNewsChange() {
+        const news = document.getElementById('news').value;
+        const banner = document.getElementById('newsBanner');
+        const pair = document.getElementById('pair');
+        if (news === 'ECB') {
+            pair.value = 'EURJPY';
+            banner.textContent = 'ECB: chiudi l\'ordine pendente se non è partito entro le 18:15 (ora italiana). Timeframe 5 min.';
+            banner.style.display = 'block';
+        } else if (news === 'FOMC') {
+            pair.value = 'EURUSD';
+            banner.textContent = 'FOMC: chiudi l\'ordine pendente se non è partito entro 75 minuti dall\'inizio della conferenza stampa. Timeframe 5 min.';
+            banner.style.display = 'block';
+        } else {
+            banner.style.display = 'none';
+        }
+        calculate();
+    }
+
+    function calculate() {
+        const pair = document.getElementById('pair').value;
+        const capital = parseFloat(document.getElementById('capital').value);
+        const leverage = parseFloat(document.getElementById('leverage').value);
+        const risk = parseFloat(document.getElementById('risk').value);
+        const high = parseFloat(document.getElementById('high').value);
+        const low = parseFloat(document.getElementById('low').value);
+        const err = document.getElementById('errorBanner');
+        const results = document.getElementById('results');
+
+        err.style.display = 'none';
+        results.style.opacity = '1';
+
+        if (!capital || !risk || !high || !low) {
+            clearResults();
+            return;
+        }
+
+        if (high <= low) {
+            err.textContent = '⚠️ ATTENZIONE: il valore HIGH deve essere maggiore del valore LOW.';
+            err.style.display = 'block';
+            results.style.opacity = '0.5';
+            clearResults();
+            return;
+        }
+
+        const isJpy = pair.endsWith('JPY');
+        const pip = isJpy ? 0.01 : 0.0001;
+        const dec = isJpy ? 3 : 5;
+
+        // Prezzi
+        const buyStop = high + BUY_OFFSET_PIPS * pip;
+        const buySL = buyStop - SL_PIPS * pip;
+        const buyTP = buyStop + TP_PIPS * pip;
+
+        const sellStop = low - SELL_OFFSET_PIPS * pip;
+        const sellSL = sellStop + SL_PIPS * pip;
+        const sellTP = sellStop - TP_PIPS * pip;
+
+        // Lotti: scenario peggiore = entrambe in stop loss -> perdita totale = rischio
+        const riskAmount = capital * risk / 100;
+        const pipValue = getPipValue(pair);
+        const lotsRaw = riskAmount / (2 * SL_PIPS * pipValue);
+        const lots = Math.floor(lotsRaw * 100 + 1e-9) / 100;
+
+        const maxLoss = lots * 2 * SL_PIPS * pipValue;
+        const margin = marginFor(pair, lots, buyStop, leverage) + marginFor(pair, lots, sellStop, leverage);
+
+        setText('lotsLong', lots.toFixed(2));
+        setText('buyStop', buyStop.toFixed(dec));
+        setText('buySL', buySL.toFixed(dec));
+        setText('buyTP', buyTP.toFixed(dec));
+
+        setText('lotsShort', lots.toFixed(2));
+        setText('sellStop', sellStop.toFixed(dec));
+        setText('sellSL', sellSL.toFixed(dec));
+        setText('sellTP', sellTP.toFixed(dec));
+
+        setText('riskAmount', '€' + riskAmount.toFixed(2));
+        setText('maxLoss', '€' + maxLoss.toFixed(2));
+        setText('margin', '€' + margin.toFixed(2));
+    }
+
+    document.getElementById('news').addEventListener('change', onNewsChange);
+    document.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', calculate);
+        el.addEventListener('change', calculate);
+    });
+    calculate();
+
+    // PWA: Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').catch(console.error);
+        });
+    }
+</script>
+</body>
+</html>
